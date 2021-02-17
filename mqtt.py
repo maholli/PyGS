@@ -5,6 +5,7 @@ from secrets import secrets
 import time
 sam32.esp_init()
 sam32.wifi(enterprise=2)
+sam32.WIFI.debug=True
 sam32.WIFI.connect()
 
 sam32.synctime()

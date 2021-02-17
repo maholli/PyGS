@@ -32,7 +32,6 @@ radio2.name='R2'
 radio3.name='R3'
 # configure radios
 for r in (radio1,radio2,radio3):
-    print(r)
     r.node = 0x33 # ground station ID
     r.idle()
     r.spreading_factor=9
