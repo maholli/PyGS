@@ -1,0 +1,12 @@
+*/old/*
+
+
+
+# CircuitPython drive files
+*.fseventsd/
+*.metadata_never_index
+*.Trashes
+*boot_out.txt
+*.URL
+*secrets*
+
