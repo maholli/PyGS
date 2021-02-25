@@ -5,7 +5,7 @@ from sam32lib import sam32
 FIFO = bytearray(256)
 fifo_view = memoryview(FIFO)
 
-def init_radios():
+def init_radios(config):
     # define radio pins
     # 1 - RST:B(D61) CS:C(DAC0)
     R1_RST = digitalio.DigitalInOut(board.D64)
@@ -24,9 +24,9 @@ def init_radios():
     R3_CS.switch_to_output(True)
 
     # initialize radios
-    radio1 = pycubed_rfm9x.RFM9x(sam32._spi,R1_CS,R1_RST,915.6,code_rate=8,baudrate=1320000)
-    radio2 = pycubed_rfm9x.RFM9x(sam32._spi,R2_CS,R2_RST,915.6,code_rate=8,baudrate=1320000)
-    radio3 = pycubed_rfm9x.RFM9x(sam32._spi,R3_CS,R3_RST,915.6,code_rate=8,baudrate=1320000)
+    radio1 = pycubed_rfm9x.RFM9x(sam32._spi,R1_CS,R1_RST,config['FREQ'],code_rate=config['CR'],baudrate=1320000)
+    radio2 = pycubed_rfm9x.RFM9x(sam32._spi,R2_CS,R2_RST,config['FREQ'],code_rate=config['CR'],baudrate=1320000)
+    radio3 = pycubed_rfm9x.RFM9x(sam32._spi,R3_CS,R3_RST,config['FREQ'],code_rate=config['CR'],baudrate=1320000)
     radio1.name='R1'
     radio2.name='R2'
     radio3.name='R3'
@@ -34,9 +34,9 @@ def init_radios():
     for r in (radio1,radio2,radio3):
         r.node = 0x33 # ground station ID
         r.idle()
-        r.spreading_factor=9
-        r.signal_bandwidth=250000
-        r.coding_rate=8
+        r.spreading_factor=config['SF']
+        r.signal_bandwidth=config['BW']
+        r.coding_rate=config['CR']
         r.preamble_length = 8
         r.enable_crc=True
         r.low_datarate_optimize = True
@@ -74,3 +74,14 @@ def get_msg(r):
             tout = time.monotonic() + 2
             yield packet
 
+def mqtt_message(client, feed_id, payload):
+    print("[{0}] {1}".format(feed_id, payload))
+    try:
+        if payload[:2]=='EV':
+            client.publish('remote/response',str(eval(payload[2:])))
+        elif payload[:2]=='EX':
+            exec(payload[2:].encode())
+    except Exception as e:
+        print('error: {}'.format(e))
+        print(type(payload))
+        client.publish('remote/response',str(e))
