@@ -14,7 +14,7 @@ import analogio,microcontroller,supervisor
 class DevBoard:
     def __init__(self):
         """
-        Big init routine as the whole board is brought up. 
+        Big init routine as the whole board is brought up.
         """
         self.hardware = {
                        'SDcard':   False,
@@ -28,7 +28,7 @@ class DevBoard:
         self._led.switch_to_output()
 
         # Define battery voltage
-        # self._vbatt = analogio.AnalogIn(board.BATTERY)
+        self._vbatt = analogio.AnalogIn(board.BATTERY)
 
         # Define SPI,I2C,UART
         self._spi  = busio.SPI(board.SCK,MOSI=board.MOSI,MISO=board.MISO)
@@ -37,8 +37,8 @@ class DevBoard:
         # Define sdcard
         self._sdcs = digitalio.DigitalInOut(board.xSDCS)
         self._sdcs.direction = digitalio.Direction.OUTPUT
-        self._sdcs.value = True         
-        
+        self._sdcs.value = True
+
         # Define ESP32
         self._esp_dtr = digitalio.DigitalInOut(board.DTR)
         self._esp_rts = digitalio.DigitalInOut(board.RTS)
@@ -61,7 +61,7 @@ class DevBoard:
             sys.path.append("/sd")
             self.hardware['SDcard'] = True
         except Exception as e:
-            print('[WARNING]',e) 
+            print('[WARNING]',e)
 
 
         # Initialize Neopixel
@@ -70,7 +70,7 @@ class DevBoard:
             self.neopixel[0] = (0,0,0)
             self.hardware['Neopixel'] = True
         except Exception as e:
-            print('[WARNING]',e) 
+            print('[WARNING]',e)
     def esp_init(self):
         from adafruit_esp32spi import adafruit_esp32spi
         # Initialize ESP32
@@ -79,11 +79,11 @@ class DevBoard:
             if self._esp.status == adafruit_esp32spi.WL_IDLE_STATUS:
                 self.hardware['ESP32'] = True
         except Exception as e:
-            print('[WARNING]',e,'- have you programed the ESP32?') 
+            print('[WARNING]',e,'- have you programed the ESP32?')
 
     @property
     def temperature_cpu(self):
-        return microcontroller.cpu.temperature # Celsius 
+        return microcontroller.cpu.temperature # Celsius
 
     @property
     def LED(self):
@@ -113,10 +113,10 @@ class DevBoard:
                 self.neopixel.brightness = value
             except Exception as e:
                 print('[WARNING]',e)
-    
+
     def unique_file(self):
         import os
-        if not self.hardware['SDcard']: 
+        if not self.hardware['SDcard']:
             return False
         try:
             name = 'DATA_000'
@@ -128,7 +128,7 @@ class DevBoard:
                         time.sleep(0.01)
                     self.filename = '/sd/'+_filename
                     print('filename is:',self.filename)
-                    return True                                  
+                    return True
         except Exception as e:
             print('--- SD card error ---', e)
             self.RGB = (255,0,0)
@@ -204,7 +204,7 @@ class DevBoard:
         _voltage = _voltage / 2 # voltage divider
         return _voltage # in volts
 
-    
+
 
     def esp_status(self):
         if self.hardware['ESP32']:
@@ -214,7 +214,7 @@ class DevBoard:
                 else:
                     print('\t',self._esp.status)
             except Exception as e:
-                print('[WARNING]',e) 
+                print('[WARNING]',e)
         else:
             print('[WARNING] ESP32 not initialized')
 
@@ -227,7 +227,7 @@ class DevBoard:
                 print('[WARNING]',e)
         else:
             print('[WARNING] ESP32 not initialized')
-    
+
     def wifi(self, enterprise=1):
         if self.hardware['ESP32']:
             try:
@@ -310,7 +310,7 @@ class DevBoard:
                     if self._uart.in_waiting:
                         try:
                             data = self._uart.read()
-                            data_string = ''.join([chr(b) for b in data]) 
+                            data_string = ''.join([chr(b) for b in data])
                             print('\t',data_string, end='')
                         except:
                             pass
@@ -357,7 +357,7 @@ class DevBoard:
         self.group_name = group
 
         self.WIFI.connect()
-            
+
         mqtt_client = MQTT(
         socket=socket,
         broker="io.adafruit.com",
@@ -375,6 +375,6 @@ class DevBoard:
         self.io.connect()
 
         # except Exception as e:
-        #     print('[WARNING]',e)         
+        #     print('[WARNING]',e)
 
 sam32 = DevBoard()

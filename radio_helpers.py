@@ -78,10 +78,12 @@ def mqtt_message(client, feed_id, payload):
     print("[{0}] {1}".format(feed_id, payload))
     try:
         if payload[:2]=='EV':
-            client.publish('remote/response',str(eval(payload[2:])))
+            client.publish('gs/remote/response',str(eval(payload[2:])))
         elif payload[:2]=='EX':
             exec(payload[2:].encode())
+        elif payload[:4]=='PING':
+            client.publish('gs/remote/response',str(sam32.battery_voltage()))
     except Exception as e:
         print('error: {}'.format(e))
         print(type(payload))
-        client.publish('remote/response',str(e))
+        client.publish('gs/remote/response',str(e))
