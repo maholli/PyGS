@@ -27,7 +27,6 @@ print('Loop: {}, Total Msgs: {}, Msgs in Cache: {}'.format(gs.counter,gs.msg_cou
 # try connecting to wifi
 print('Connecting to WiFi...')
 try:
-    # wifi.radio.connect(ssid='W6YX') # open network
     wifi.radio.connect(ssid='S8hotspot') # open network
 
     # Create a socket pool
@@ -89,14 +88,14 @@ if wifi.radio.ap_info is not None:
 
     mqtt_client.connect()
     mqtt_client.subscribe(CTRL_TOPIC)
-    mqtt_client.publish(DATA_TOPIC,'[{}][{}] Loop:{}, Msg Cnt:{}, Msg Cache:{}'.format(time.time(),gs.myuid,gs.counter,gs.msg_count,gs.msg_cache))
+    mqtt_client.publish(DATA_TOPIC,'[{}] Loop:{}, Msg Cnt:{}, Msg Cache:{}'.format(time.time(),gs.counter,gs.msg_count,gs.msg_cache))
 
     # send any cached messages
     if gs.msg_cache:
         with open('/data.txt','r') as f:
             l=f.readline()
             while l:
-                mqtt_client.publish(DATA_TOPIC,'[cached][{}] {}'.format(gs.myuid,l.strip()))
+                mqtt_client.publish(DATA_TOPIC,'[cached] {}'.format(l.strip()))
                 l=f.readline()
         os.remove('/data.txt')
         gs.msg_cache=0
