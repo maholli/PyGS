@@ -27,7 +27,8 @@ print('Loop: {}, Total Msgs: {}, Msgs in Cache: {}'.format(gs.counter,gs.msg_cou
 # try connecting to wifi
 print('Connecting to WiFi...')
 try:
-    wifi.radio.connect(ssid='S8hotspot') # open network
+    wifi.radio.connect(ssid='W6YX') # open network
+    # wifi.radio.connect(ssid='S8hotspot') # open network
 
     # Create a socket pool
     pool = socketpool.SocketPool(wifi.radio)
@@ -45,12 +46,12 @@ if alarm.wake_alarm:
             print(r,end=': ')
             for msg in gs.get_msg2(radios[r]):
                 if msg is not None:
-                    print(bytes(msg), end=', ')
+                    print('[{}] rssi:{}'.format(bytes(msg),gs.last_rssi), end=', ')
                     if msg is b'CRC ERROR':
-                        msg_str = '{},{},{}'.format(time.time(),r,'CRC ERROR')
+                        msg_str = '{},{},{},{}'.format(time.time(),r,'CRC ERROR',gs.last_rssi)
                         new_messages.append(msg_str)
                     else:
-                        msg_str = '{},{},{}'.format(time.time(),r,bytes(msg))
+                        msg_str = '{},{},{},{}'.format(time.time(),r,bytes(msg),gs.last_rssi)
                         new_messages.append(msg_str)
             print()
     radios = gs.init_radios(gs.SATELLITE['VR3X'])
@@ -61,12 +62,12 @@ else:
             print(r.name,end=': ')
             for msg in gs.get_msg(r):
                 if msg is not None:
-                    print(bytes(msg), end=', ')
+                    print('[{}] rssi:{}'.format(bytes(msg),gs.last_rssi), end=', ')
                     if msg is b'CRC ERROR':
-                        msg_str = '{},{},{}'.format(time.time(),r.name,'CRC ERROR')
+                        msg_str = '{},{},{},{}'.format(time.time(),r.name,'CRC ERROR',gs.last_rssi)
                         new_messages.append(msg_str)
                     else:
-                        msg_str = '{},{},{}'.format(time.time(),r.name,bytes(msg))
+                        msg_str = '{},{},{},{}'.format(time.time(),r.name,bytes(msg),gs.last_rssi)
                         new_messages.append(msg_str)
             print()
 

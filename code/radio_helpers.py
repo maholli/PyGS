@@ -31,6 +31,7 @@ def connected(client, userdata, flags, rc):
 class GroundStation:
     CACHE_START = 7
     myuid=int.from_bytes(cpu.uid,'big')
+    last_rssi=0
 
     SATELLITE = {
         'NORBI':{'NAME':'NORBI','FREQ':436.703,'SF':10,'BW':250000,'CR':8},
@@ -193,6 +194,7 @@ class GroundStation:
         else:
             packet=None
             error=1
+            self.last_rssi=self._read_u8(radio_cs,0x1A)-164
             # put into idle mode
             reg=self._read_u8(radio_cs,0x01)
             reg&=~7 # mask
@@ -227,6 +229,7 @@ class GroundStation:
             else:
                 packet=None
                 error=1
+                self.last_rssi=r._read_u8(0x1A)-164
                 r.idle()
                 if not r.crc_error():
                     l=r._read_u8(0x13) # fifo length
