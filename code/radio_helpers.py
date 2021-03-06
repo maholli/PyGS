@@ -3,30 +3,29 @@ import pycubed_rfm9x
 import adafruit_requests,rtc,json
 from microcontroller import cpu
 import adafruit_dotstar
+from analogio import AnalogIn
 
 FIFO = bytearray(256)
 fifo_view = memoryview(FIFO)
+
 
 def mqtt_message(client, feed_id, payload):
     print("[{0}] {1}".format(feed_id, payload))
     try:
         if payload[:2]=='EV':
-            client.publish('gs/control/response',str(eval(payload[2:])))
+            client.publish('gs/remote/response',str(eval(payload[2:])))
         elif payload[:2]=='EX':
             exec(payload[2:].encode())
         elif payload[:4]=='PING':
-            client.publish('gs/control/response',str(sam32.battery_voltage()))
+            client.publish('gs/remote/response',str(time.time()))
     except Exception as e:
         print('error: {}'.format(e))
-        print(type(payload))
-        client.publish('gs/control/response',str(e))
+        client.publish('gs/remote/response',str(e))
 
 def connected(client, userdata, flags, rc):
     # This function will be called when the client is connected
     # successfully to the broker.
     print("Connected to MQTT broker!")
-    # Subscribe to all changes on the default_topic feed.
-    client.subscribe('gs/testsub')
 
 class GroundStation:
     CACHE_START = 7
@@ -39,6 +38,7 @@ class GroundStation:
     }
 
     def __init__(self):
+        self.vbatt = AnalogIn(board.IO17)
         LED= digitalio.DigitalInOut(board.LED)
         LED.switch_to_output(True)
         self.rgb = adafruit_dotstar.DotStar(board.APA102_SCK, board.APA102_MOSI, 1, brightness=0.5, auto_write=True)
@@ -52,6 +52,13 @@ class GroundStation:
         self.R3_CS.switch_to_output(True)
         self._BUFFER=bytearray(256)
 
+    @property
+    def battery_voltage(self):
+        _v=0
+        for _ in range(20):
+            _v+=self.vbatt.value
+        _v=2*((_v/20)*3.3/65536)
+        return _v
 
 
     def init_radios(self,config):
@@ -145,19 +152,11 @@ class GroundStation:
         alarm.sleep_memory[4] = value
 
     @property
-    def cache_pointer(self):
-        return int.from_bytes(alarm.sleep_memory[5:6],'big')
-    @cache_pointer.setter
-    def cache_pointer(self,value):
+    def deep_sleep(self):
+        return int.from_bytes(alarm.sleep_memory[5:7],'big')
+    @deep_sleep.setter
+    def deep_sleep(self,value):
         alarm.sleep_memory[5:7] = int(value % 65536).to_bytes(2,'big')
-
-    def cache(self,msg):
-        cache_pointer = self.cache_pointer
-        msg_encoded = msg.encode()
-        msg_length = len(msg_encoded)
-        alarm.sleep_memory[cache_pointer:cache_pointer+msg_length] = msg_encoded
-        self.cache_pointer = cache_pointer+msg_length
-        self.msg_cache+=1
 
     def _read_into(self, radio_cs, address, buf, length=None):
         if length is None:
