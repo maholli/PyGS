@@ -44,4 +44,10 @@ The hardware from Adafruit needs to be assembled as described below. Keep in min
 4. In order to monitor battery voltage, we need to add a voltage divider. Solder your two 100kΩ resistors as shown below.
 ![image](https://user-images.githubusercontent.com/29153441/110257204-97282080-7f51-11eb-941f-145d0b940ee9.png)
 
-
+### Software
+1. Update the FeatherS2 firmware using the .UF2 file in this repo's firmware directory. This can be done by putting the board into bootloader mode (plug into computer, click reset button, then click boot button) and then dragging the UF2 file onto the `FeatherS2` drive that should mount shortly. It will likely have an error while copying the file. Don't worry about it.
+2. Unplug and plug the board back into your computer
+3. Copy the contents of the `code` directory from this repo to the CIRCUITPY drive
+4. On the CIRCUITPY drive, open the `RENAME_ME.py` file in the lib folder and update the mqtt broker info and save
+5. Now rename the `RENAME_ME.py` file to: `secrets.py`
+6. Open `code.py` and edit line 32 to your respective WiFi SSID
