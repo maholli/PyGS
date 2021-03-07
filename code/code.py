@@ -29,8 +29,7 @@ print('Loop: {}, Total Msgs: {}, Msgs in Cache: {}, Vbatt: {:.1f}'.format(gs.cou
 # try connecting to wifi
 print('Connecting to WiFi...')
 try:
-    # wifi.radio.connect(ssid='W6YX') # open network
-    wifi.radio.connect(ssid='S8hotspot') # open network
+    wifi.radio.connect(ssid='RENAME ME') # open network
 
     print('Signal: {}'.format(wifi.radio.ap_info.rssi))
     # Create a socket pool
