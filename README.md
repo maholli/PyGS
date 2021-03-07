@@ -42,7 +42,8 @@ The hardware from Adafruit needs to be assembled as described below. Keep in min
 
 3. Now assemble the FeatherS2 with stacking headers
 4. In order to monitor battery voltage, we need to add a voltage divider. Solder your two 100kΩ resistors as shown below.
-![image](https://user-images.githubusercontent.com/29153441/110257204-97282080-7f51-11eb-941f-145d0b940ee9.png)
+
+![image](https://user-images.githubusercontent.com/29153441/110257961-12d79c80-7f55-11eb-8bbd-51a03e2a1d0d.png)
 
 ### Software
 1. Update the FeatherS2 firmware using the .UF2 file in this repo's firmware directory. This can be done by putting the board into bootloader mode (plug into computer, click reset button, then click boot button) and then dragging the UF2 file onto the `FeatherS2` drive that should mount shortly. It will likely have an error while copying the file. Don't worry about it.
