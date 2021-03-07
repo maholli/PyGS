@@ -59,13 +59,13 @@ class GroundStation:
 
     def init_radios(self,config):
         # define radio pins
-        # 1 - RST:B(D61/D6) CS:C(DAC0/D5)
+        # 1 - RST:B(D61/D6) CS:C(DAC0/D5)  IRQ:IO5
         R1_RST = digitalio.DigitalInOut(board.D6)
         R1_RST.switch_to_output(True)
-        # 2 - RST:D(A7/D21)  CS:E(A8/D20)
+        # 2 - RST:D(A7/D21) CS:E(A8/D20)   IRQ:IO6
         R2_RST = digitalio.DigitalInOut(board.D21)
         R2_RST.switch_to_output(True)
-        # 3 - RST:D59/D12    CS:DAC1/D13
+        # 3 - RST:D59/D12   CS:DAC1/D13    IRQ:IO7
         R3_RST = digitalio.DigitalInOut(board.D13)
         R3_RST.switch_to_output(True)
 
