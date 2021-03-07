@@ -2,7 +2,6 @@ import digitalio,board, time, alarm
 import pycubed_rfm9x
 import adafruit_requests,rtc,json
 from microcontroller import cpu
-import adafruit_dotstar
 from analogio import AnalogIn
 
 FIFO = bytearray(256)
@@ -28,7 +27,6 @@ def connected(client, userdata, flags, rc):
     print("Connected to MQTT broker!")
 
 class GroundStation:
-    CACHE_START = 7
     myuid=int.from_bytes(cpu.uid,'big')
     last_rssi=0
 
@@ -41,14 +39,12 @@ class GroundStation:
         self.vbatt = AnalogIn(board.IO17)
         LED= digitalio.DigitalInOut(board.LED)
         LED.switch_to_output(True)
-        self.rgb = adafruit_dotstar.DotStar(board.APA102_SCK, board.APA102_MOSI, 1, brightness=0.5, auto_write=True)
-        self.rgb[0]=(0,0,255)
         self.spi=board.SPI()
         self.R1_CS  = digitalio.DigitalInOut(board.D5)
-        self.R1_CS.switch_to_output(True)
         self.R2_CS  = digitalio.DigitalInOut(board.D20)
-        self.R2_CS.switch_to_output(True)
         self.R3_CS  = digitalio.DigitalInOut(board.D12)
+        self.R1_CS.switch_to_output(True)
+        self.R2_CS.switch_to_output(True)
         self.R3_CS.switch_to_output(True)
         self._BUFFER=bytearray(256)
 
@@ -105,7 +101,8 @@ class GroundStation:
             response = None
             while True:
                 try:
-                    print("Fetching json from", TIME_API)
+                    print("Fetching time")
+                    # print("Fetching json from", TIME_API)
                     response = requests.get(TIME_API)
                     break
                 except (ValueError, RuntimeError) as e:
